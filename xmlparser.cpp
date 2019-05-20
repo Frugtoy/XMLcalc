@@ -2,12 +2,12 @@
 
 xmlparser::xmlparser(){}
 xmlparser::~xmlparser(){}
-QVector<int>xmlparser::parse(const Qstring &path){
-    QVector<int>result;
-    QFile*file = new Qfile(path);
+QVector<double>xmlparser::parse(const QString &path){
+    QVector<double>result;
+    QFile*file = new QFile(path);
     if(!file->open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        throw std::logic_error("pleace check a path of file");
+        throw std::logic_error("please check a path of file");
     }
     QXmlStreamReader tag(file);
     while (!tag.atEnd() && !tag.hasError()) {
@@ -21,35 +21,36 @@ QVector<int>xmlparser::parse(const Qstring &path){
 
             QXmlStreamAttributes attributes = tag.attributes();
             if(attributes.hasAttribute("arg1")&&attributes.hasAttribute("arg2")) {
-                switch (tag.name()) {
-                    case "sum": {
+
+                if (tag.name() == "sum")
+                {
                         result.push_back(0);
                         result.push_back(attributes.value("arg1").toInt());
                         result.push_back(attributes.value("arg2").toInt());
-                        result.push_back(sum(attributes.value("arg1").toInt(),attributes.value("arg2").toInt());
-                        break;
-                    }
-                     case "diff": {
+                        result.push_back(sum(attributes.value("arg1").toInt(),attributes.value("arg2").toInt()));
+
+                 }
+                if (tag.name() =="diff") {
                         result.push_back(1);
                         result.push_back(attributes.value("arg1").toInt());
                         result.push_back(attributes.value("arg2").toInt());
-                        result.push_back(sum(attributes.value("arg1").toInt(),attributes.value("arg2").toInt());
-                        break;
-                     }
-                     case "div": {
+                        result.push_back(diff(attributes.value("arg1").toInt(),attributes.value("arg2").toInt()));
+
+                 }
+                     if (tag.name() == "div") {
                         result.push_back(2);
                         result.push_back(attributes.value("arg1").toInt());
                         result.push_back(attributes.value("arg2").toInt());
-                        result.push_back(sum(attributes.value("arg1").toInt(),attributes.value("arg2").toInt());
-                        break;
+                        result.push_back(div(attributes.value("arg1").toInt(),attributes.value("arg2").toInt()));
+
                      }
 
-                     case "mult": {
+                     if (tag.name() == "mult") {
                         result.push_back(3);
                         result.push_back(attributes.value("arg1").toInt());
                         result.push_back(attributes.value("arg2").toInt());
-                        result.push_back(sum(attributes.value("arg1").toInt(),attributes.value("arg2").toInt());
-                     break;
+                        result.push_back(mult(attributes.value("arg1").toInt(),attributes.value("arg2").toInt()));
+
                      }
                 }
            }
@@ -59,9 +60,9 @@ QVector<int>xmlparser::parse(const Qstring &path){
     file->close();
     return result;
 }
-}
 
-void xmlparser::write(const QString& path, QVector<int> result) {
+
+void xmlparser::write(const QString& path, QVector<double> result) {
 
     QFile* file =new QFile(path);
     if(!file->open(QIODevice::WriteOnly | QIODevice::Text))
@@ -70,10 +71,10 @@ void xmlparser::write(const QString& path, QVector<int> result) {
     QXmlStreamWriter xml(file);
     xml.setAutoFormatting(true);
     xml.writeStartDocument();
-    xml.writeStartElement("respnse");
+    xml.writeStartElement("response");
 
     for(int i =0;i<result.size();i+=4) {
-        switch(result[i]) {
+        switch(static_cast<int>(result[i])) {
             case 0: {
                 xml.writeStartElement("sum");
                 break;

@@ -5,7 +5,7 @@
 #include<QXmlStreamReader>
 #include<QXmlStreamWriter>
 #include<exception>
-
+#include "calculator.h"
 class xmlparser : public calculator
 {
 public:
@@ -13,8 +13,8 @@ public:
     xmlparser();
    ~xmlparser();
 
-    QVector<int>parse(const QString &path)override;
-    void write(const QString &path, QVector<int>result)override;
+    QVector<double>parse(const QString &path)override;
+    void write(const QString &path, QVector<double>result)override;
 };
 
 #endif // XMLPARSER_H
